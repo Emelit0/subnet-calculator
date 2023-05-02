@@ -15,5 +15,18 @@ int main() {
     double aHosts;
 
     header();
+
+    while (IPgiven == 0) {
+        printf("/n Please input a IP-address in the right format XXX.XXX.XXX.XXX: ");
+        scanf("%i.%i.%i.%i.%i", &IP1, &IP2, &IP3, &IP4);
+
+        if (IP1 > 255 || IP2 > 255 || IP3 > 255 || IP4 > 255 || IP1 == 127 || IP1 == 255 || IP1 < 1 || IP2 < 0 || IP3 < 0 || IP4 < 0) {
+            printf("Please validate your input and check for the correct format");
+
+        } else {
+            IPgiven = 1;
+        }
+
+    }
 }
 
