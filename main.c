@@ -1,12 +1,13 @@
 #include <stdio.h>
-
+#include <bits/stdint-uintn.h>
+#include <stdlib.h>
 
 
 typedef struct {
-    uint32_t octet1 : 8;
-    uint32_t octet2 : 8;
-    uint32_t octet3 : 8;
-    uint32_t octet4 : 8;
+    uint8_t octet1;
+    uint8_t octet2;
+    uint8_t octet3;
+    uint8_t octet4;
 } ipv4_addr;
 
 typedef struct {
@@ -17,7 +18,7 @@ typedef struct {
 } subnet_info;
 
 
-void getSubnetInfo(ipv4_addr ip_addr, uint8_t mask_len, subnet_info* subnet) {
+void getSubnetInfo(ipv4_addr ip_addr, uint8_t mask_len, subnet_info *subnet) {
 
     // Calculate subnet mask
     uint32_t subnet_mask = 0;
@@ -51,19 +52,35 @@ void getSubnetInfo(ipv4_addr ip_addr, uint8_t mask_len, subnet_info* subnet) {
         }
         subnet->broadcast_addr.octet4 &= ~(1 << i); // set the i-th bit of broadcast address to 0
     }
+
+    printf("%u", num_hosts);
+
 }
 
 int main() {
 
+    char ip_str[16];
+    int mask_len;
     ipv4_addr ip_address;
-    ipv4_addr subnet_mask;
+    subnet_info subnet;
 
-    printf("Enter IP address (in dotted decimal notation): ");
-    scanf("%hhu.%hhu.%hhu.%hhu", &ip_address.octet1, &ip_address.octet2, &ip_address.octet3, &ip_address.octet4);
+
+    printf("Enter IP address (in dotted decimal notation e.g. 192.168.0.1): ");
+    scanf("%15s", ip_str);
+    scanf(ip_str, "%u, %u, %u, %u", &ip_address.octet1, &ip_address.octet2, &ip_address.octet3, &ip_address.octet4);
 
     printf("Enter subnet mask (in dotted decimal notation): ");
-    scanf("%hhu.%hhu.%hhu.%hhu", &subnet_mask.octet1, &subnet_mask.octet2, &subnet_mask.octet3, &subnet_mask.octet4);
+    scanf("%u", &mask_len);
 
-    subnet_info subnet;
+    getSubnetInfo(ip_address, mask_len, &subnet);
+
+    printf( "%i", ip_address, subnet, mask_len, subnet.num_hosts, subnet.network_addr, subnet.subnet_mask, subnet.broadcast_addr);
+
+//    subnet_info subnet;
+
+//    getSubnetInfo(ip_address, mask_len, &subnet);
+
 }
+
+
 
