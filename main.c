@@ -52,9 +52,6 @@ void getSubnetInfo(ipv4_addr ip_addr, uint8_t mask_len, subnet_info *subnet) {
         }
         subnet->broadcast_addr.octet4 &= ~(1 << i); // set the i-th bit of broadcast address to 0
     }
-
-    printf("%u", num_hosts);
-
 }
 
 int main() {
@@ -68,18 +65,18 @@ int main() {
     printf("Enter IP address (in dotted decimal notation e.g. 192.168.0.1): ");
     scanf("%15s", ip_str);
     scanf(ip_str, "%u, %u, %u, %u", &ip_address.octet1, &ip_address.octet2, &ip_address.octet3, &ip_address.octet4);
-
     printf("Enter subnet mask (in dotted decimal notation): ");
     scanf("%u", &mask_len);
 
     getSubnetInfo(ip_address, mask_len, &subnet);
 
-    printf( "%i", ip_address, subnet, mask_len, subnet.num_hosts, subnet.network_addr, subnet.subnet_mask, subnet.broadcast_addr);
-
-//    subnet_info subnet;
-
-//    getSubnetInfo(ip_address, mask_len, &subnet);
-
+    printf("Network address: %u.%u.%u.%u\n", subnet.network_addr.octet1, subnet.network_addr.octet2,
+           subnet.network_addr.octet3, subnet.network_addr.octet4);
+    printf("Subnet mask: %u.%u.%u.%u\n", subnet.subnet_mask.octet1, subnet.subnet_mask.octet2,
+             subnet.subnet_mask.octet3, subnet.subnet_mask.octet4);
+    printf("Broadcast address: %u.%u.%u.%u\n", subnet.broadcast_addr.octet1, subnet.broadcast_addr.octet2,
+             subnet.broadcast_addr.octet3, subnet.broadcast_addr.octet4);
+    printf("Number of hosts: %u\n", subnet.num_hosts);
 }
 
 
