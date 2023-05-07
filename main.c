@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <bits/stdint-uintn.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stdint.h>
 
 
 typedef struct {
@@ -62,9 +64,17 @@ int main() {
     subnet_info subnet;
 
 
-    printf("Enter IP address (in dotted decimal notation e.g. 192.168.0.1): ");
-    scanf("%15s", ip_str);
-    scanf(ip_str, "%u, %u, %u, %u", &ip_address.octet1, &ip_address.octet2, &ip_address.octet3, &ip_address.octet4);
+    printf("Enter IP address (in dotted decimal notation e.g. 192.168.0.1): \n");
+    fgets(ip_str, sizeof(ip_str), stdin);
+    ip_str[strcspn(ip_str, "\n")] = '\0'; // Remove trailing newline from input
+    if (sscanf(ip_str, "%hhu.%hhu.%hhu.%hhu", &ip_address.octet1, &ip_address.octet2, &ip_address.octet3, &ip_address.octet4) != 4) {
+        printf("Invalid address format\n");
+        exit(EXIT_FAILURE);
+    }
+    printf("You entered: %hhu.%hhu.%hhu.%hhu\n", ip_address.octet1, ip_address.octet2, ip_address.octet3, ip_address.octet4);
+
+//    scanf(ip_str, "%hhu, %hhu, %hhu, %hhu", &ip_address.octet1, &ip_address.octet2, &ip_address.octet3, &ip_address.octet4);
+//    printf("You entered Ip Address: %hhu, %hhu, %hhu, %hhu", ip_address.octet1, ip_address.octet2, ip_address.octet3, ip_address.octet4);
     printf("Enter subnet mask (in dotted decimal notation): ");
     scanf("%u", &mask_len);
 
