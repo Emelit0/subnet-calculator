@@ -15,7 +15,7 @@ typedef struct {
 typedef struct {
     ipv4_addr network_addr;
     ipv4_addr subnet_mask;
-    ipv4_addr broadcast_addr;
+    ipv4_addr firstClient;
     uint32_t num_hosts;
 } subnet_info;
 
@@ -27,6 +27,7 @@ void getSubnetInfo(ipv4_addr ip_addr, uint8_t mask_len, subnet_info *subnet) {
     for (int i = 0; i < mask_len; i++) {
         subnet_mask |= (1 << (31 - i)); // set the i-th bit of subnet mask to 1
     }
+
     subnet->subnet_mask.octet1 = (subnet_mask >> 24) & 0xff;
     subnet->subnet_mask.octet2 = (subnet_mask >> 16) & 0xff;
     subnet->subnet_mask.octet3 = (subnet_mask >> 8) & 0xff;
@@ -38,21 +39,21 @@ void getSubnetInfo(ipv4_addr ip_addr, uint8_t mask_len, subnet_info *subnet) {
     subnet->network_addr.octet3 = ip_addr.octet3 & subnet->subnet_mask.octet3;
     subnet->network_addr.octet4 = ip_addr.octet4 & subnet->subnet_mask.octet4;
 
-    // Calculate broadcast address
-    subnet->broadcast_addr.octet1 = subnet->network_addr.octet1;
-    subnet->broadcast_addr.octet2 = subnet->network_addr.octet2;
-    subnet->broadcast_addr.octet3 = subnet->network_addr.octet3;
-    subnet->broadcast_addr.octet4 = subnet->network_addr.octet4;
+    // Calculate first client address
+    subnet->firstClient.octet1 = subnet->network_addr.octet1;
+    subnet->firstClient.octet2 = subnet->network_addr.octet2;
+    subnet->firstClient.octet3 = subnet->network_addr.octet3;
+    subnet->firstClient.octet4 = subnet->network_addr.octet4;
 
     // Calculate number of hosts
     uint32_t num_hosts = (1 << (32 - mask_len)) - 2;
     for (int i = 0; i < 4; i++) {
-        subnet->broadcast_addr.octet4 |= (1 << i); // set the i-th bit of broadcast address to 1
-        if (subnet->broadcast_addr.octet4 > subnet->network_addr.octet4) {
+        subnet->firstClient.octet4 |= (1 << i); // set the i-th bit of broadcast address to 1
+        if (subnet->firstClient.octet4 > subnet->network_addr.octet4) {
             subnet->num_hosts = num_hosts;
             break;
         }
-        subnet->broadcast_addr.octet4 &= ~(1 << i); // set the i-th bit of broadcast address to 0
+        subnet->firstClient.octet4 &= ~(1 << i); // set the i-th bit of broadcast address to 0
     }
 }
 
@@ -80,25 +81,27 @@ int main() {
         printf("Invalid address format\n");
         exit(EXIT_FAILURE);
     }
-    printf("You entered: %hhu.%hhu.%hhu.%hhu\n", ip_address.octet1, ip_address.octet2, ip_address.octet3, ip_address.octet4);
-
-//    scanf(ip_str, "%hhu, %hhu, %hhu, %hhu", &ip_address.octet1, &ip_address.octet2, &ip_address.octet3, &ip_address.octet4);
-//    printf("You entered Ip Address: %hhu, %hhu, %hhu, %hhu", ip_address.octet1, ip_address.octet2, ip_address.octet3, ip_address.octet4);
-    printf("Enter subnet mask (in dotted decimal notation): ");
+    printf("Enter subnet mask (in CIDR notation):");
     scanf("%u", &mask_len);
+    printf("You entered: %hhu.%hhu.%hhu.%hhu ", ip_address.octet1, ip_address.octet2, ip_address.octet3, ip_address.octet4);
+    printf(" /%i\n", mask_len);
 
+
+
+// calculate network info
     getSubnetInfo(ip_address, mask_len, &subnet);
+    ipv4_addr broadcast_address = ip_broadcast_address(ip_address, subnet.subnet_mask);
 
+//output network information
     printf("Network address: %u.%u.%u.%u\n", subnet.network_addr.octet1, subnet.network_addr.octet2,
            subnet.network_addr.octet3, subnet.network_addr.octet4);
     printf("Subnet mask: %u.%u.%u.%u\n", subnet.subnet_mask.octet1, subnet.subnet_mask.octet2,
              subnet.subnet_mask.octet3, subnet.subnet_mask.octet4);
-    printf("Broadcast address: %u.%u.%u.%u\n", subnet.broadcast_addr.octet1, subnet.broadcast_addr.octet2,
-             subnet.broadcast_addr.octet3, subnet.broadcast_addr.octet4);
+    printf("First client IP-Address: %u.%u.%u.%u\n", subnet.firstClient.octet1, subnet.firstClient.octet2,
+             subnet.firstClient.octet3, subnet.firstClient.octet4);
     printf("Number of hosts: %u\n", subnet.num_hosts);
 
-    ipv4_addr broadcast_address = ip_broadcast_address(ip_address, subnet.subnet_mask);
-    printf("new Broadcast: %hhu.%hhu.%hhu.%hhu", broadcast_address.octet1, broadcast_address.octet2, broadcast_address.octet3, broadcast_address.octet4);
+    printf("Broadcast: %hhu.%hhu.%hhu.%hhu", broadcast_address.octet1, broadcast_address.octet2, broadcast_address.octet3, broadcast_address.octet4);
 }
 
 
