@@ -73,6 +73,8 @@ int main() {
     ipv4_addr ip_address;
     subnet_info subnet;
 
+    printf("Calculate network information with a given ip-address and subnet mask\n");
+    printf("Do you want to use ipv4 or ipv6?\n");
 
     printf("Enter IP address (in dotted decimal notation e.g. 192.168.0.1): \n");
     fgets(ip_str, sizeof(ip_str), stdin);
