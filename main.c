@@ -56,6 +56,15 @@ void getSubnetInfo(ipv4_addr ip_addr, uint8_t mask_len, subnet_info *subnet) {
     }
 }
 
+ipv4_addr ip_broadcast_address(ipv4_addr ip_address, ipv4_addr subnet_mask) {
+    ipv4_addr broadcast_address;
+    broadcast_address.octet1 = ip_address.octet1 | ~subnet_mask.octet1;
+    broadcast_address.octet2 = ip_address.octet2 | ~subnet_mask.octet2;
+    broadcast_address.octet3 = ip_address.octet3 | ~subnet_mask.octet3;
+    broadcast_address.octet4 = ip_address.octet4 | ~subnet_mask.octet4;
+    return broadcast_address;
+}
+
 int main() {
 
     char ip_str[16];
@@ -87,6 +96,9 @@ int main() {
     printf("Broadcast address: %u.%u.%u.%u\n", subnet.broadcast_addr.octet1, subnet.broadcast_addr.octet2,
              subnet.broadcast_addr.octet3, subnet.broadcast_addr.octet4);
     printf("Number of hosts: %u\n", subnet.num_hosts);
+
+    ipv4_addr broadcast_address = ip_broadcast_address(ip_address, subnet.subnet_mask);
+    printf("new Broadcast: %hhu.%hhu.%hhu.%hhu", broadcast_address.octet1, broadcast_address.octet2, broadcast_address.octet3, broadcast_address.octet4);
 }
 
 
